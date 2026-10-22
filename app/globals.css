@@ -87,6 +87,10 @@ h2 { font-size: 17px; letter-spacing: -.3px; line-height: 1.4; margin-bottom: 0;
 .demo-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .demo-confirm { margin: 14px 0 0; }
 .demo-confirm p { margin-bottom: 10px; }
+.demo-access { margin: 20px 0; }
+.demo-permissions { list-style: none; padding: 0; margin: 0; }
+.demo-permissions li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.demo-result { margin-top: 15px; margin-bottom: 10px; }
 .vault-footer { display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; padding-top: 21px; margin-top: 36px; }
 .vault-footer span { display: flex; align-items: center; gap: 6px; }
 .vault-footer svg { height: 14px; width: 14px; }

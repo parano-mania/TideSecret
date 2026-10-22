@@ -1,9 +1,26 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { encryptDemoNote, decryptDemoNote, requireDemoPermission, DEMO_NOTES_KEY } from '../lib/demo-crypto.ts'
+import { encryptDemoNote, decryptDemoNote, requireDemoPermission, demoAccessDecision, DEMO_NOTES_KEY } from '../lib/demo-crypto.ts'
 import { readEncryptedNotes, saveEncryptedNote, deleteEncryptedNote } from '../lib/encrypted-notes.ts'
 
 const newKey = () => crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'])
+
+test('access policy distinguishes signed-out, missing-role and authorized requests', () => {
+  for (const action of ['view', 'encrypt', 'save', 'decrypt', 'delete']) {
+    assert.equal(demoAccessDecision(null, action).status, 401)
+    assert.equal(demoAccessDecision('owner', action).status, 200)
+    assert.equal(demoAccessDecision('restricted', action).status, action === 'view' ? 200 : 403)
+  }
+})
+
+test('unknown roles and actions never authorize, even if they name object prototype properties', () => {
+  for (const role of ['admin', 'toString', 'constructor', '__proto__']) {
+    assert.equal(demoAccessDecision(role, 'decrypt').allowed, false)
+  }
+  for (const action of ['admin', 'toString', 'constructor', '__proto__']) {
+    assert.equal(demoAccessDecision('owner', action).allowed, false)
+  }
+})
 
 test('demo encrypt, persist, reload, decrypt and delete round trip without plaintext in storage', async () => {
   const key = await newKey()

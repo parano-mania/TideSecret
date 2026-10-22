@@ -4,6 +4,10 @@ A private-notes prototype built with Next.js, React and TypeScript. Includes a w
 
 **Plan C demo — TideCloak protections simulated.**
 
+## Demo video
+
+Watch or download the [TideSecret demo video](demo.mp4).
+
 ## Run locally
 
 Use Node.js 22.18+ (or Node.js 24 LTS) and npm.
@@ -25,6 +29,8 @@ Open http://localhost:3000/demo. No Tide account, server or network is required 
 - Responsive layout and clear simulation disclosures.
 
 See [PLAN-C.md](PLAN-C.md) for a walkthrough and storage details.
+
+The access panel demonstrates owner (200), restricted (403) and signed-out (401) decisions through a local simulation endpoint. See [TIDE-INTEGRATION.md](TIDE-INTEGRATION.md) for the Tide MCP-informed architecture and role mapping.
 
 ## Security boundaries
 

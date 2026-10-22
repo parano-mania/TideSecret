@@ -1,11 +1,41 @@
 // Local browser encryption for Plan C only. This does not implement Tide MPC.
 export type DemoRole = 'owner' | 'restricted'
-export type DemoAction = 'encrypt' | 'save' | 'decrypt' | 'delete'
+export type DemoAction = 'view' | 'encrypt' | 'save' | 'decrypt' | 'delete'
 export const DEMO_NOTES_KEY = 'tidesecret:plan-c:notes:v1'
 export const DEMO_SESSION_KEY = 'tidesecret:plan-c:session:v1'
 
+// Planned Tide realm roles. App privileges and encryption privileges are distinct.
+export const DEMO_ACTION_ROLES: Record<DemoAction, readonly string[]> = {
+  view: ['notes.view'],
+  encrypt: ['notes.create', '_tide_secret.selfencrypt'],
+  save: ['notes.create'],
+  decrypt: ['notes.view', '_tide_secret.selfdecrypt'],
+  delete: ['notes.delete'],
+}
+
+export const DEMO_ROLE_GRANTS: Record<DemoRole, readonly string[]> = {
+  owner: ['notes.view', 'notes.create', 'notes.delete', '_tide_secret.selfencrypt', '_tide_secret.selfdecrypt'],
+  restricted: ['notes.view'],
+}
+
+export function demoAccessDecision(role: DemoRole | null, action: DemoAction): {
+  allowed: boolean; status: 200 | 401 | 403; reason: string
+} {
+  if (!role) return { allowed: false, status: 401, reason: 'Sign in to access your demo vault.' }
+  const grants = DEMO_ROLE_GRANTS[role]
+  const required = DEMO_ACTION_ROLES[action]
+  // Unknown values must never authorize, including callers bypassing TypeScript.
+  const allowed = Array.isArray(grants) && Array.isArray(required) && required.every((grant) => grants.includes(grant))
+  return {
+    allowed,
+    status: allowed ? 200 : 403,
+    reason: allowed ? `Allowed: the ${role} demo role can ${action} notes.` : `Access denied: the ${role} demo role cannot ${action} notes.`,
+  }
+}
+
 export function requireDemoPermission(role: DemoRole | null, action: DemoAction): void {
-  if (role !== 'owner') throw new Error(`Access denied: the ${role ?? 'signed-out'} demo role cannot ${action} notes.`)
+  const decision = demoAccessDecision(role, action)
+  if (!decision.allowed) throw new Error(decision.status === 401 ? `Access denied: ${decision.reason}` : decision.reason)
 }
 
 function encode(bytes: Uint8Array): string {

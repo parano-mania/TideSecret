@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Brand, LockIcon } from '../components/brand'
+import DemoAccess from '../components/demo-access'
 import { deleteEncryptedNote, readEncryptedNotes, saveEncryptedNote, type EncryptedNote } from '../../lib/encrypted-notes'
 import { DEMO_NOTES_KEY, DEMO_SESSION_KEY, decryptDemoNote, encryptDemoNote, getDemoKey, requireDemoPermission, type DemoRole } from '../../lib/demo-crypto'
 
@@ -131,6 +132,7 @@ export default function DemoPage() {
     <button className="full" onClick={() => signIn('restricted')} disabled={busy}>Sign in as restricted viewer</button></div>
     <p className="auth-foot">Owner: encrypt, save, decrypt and delete. Restricted viewer: view ciphertext and demonstrate denied actions.</p>
     <p className="auth-foot">Encryption uses a key kept in this browser. Roles and login are simulated; they do not provide Tide's distributed security. Use sample notes.</p>
+    <DemoAccess role={null} />
     <p className="auth-foot"><a href="/">Return to live TideCloak sign-in</a></p>
   </section></main>
 
@@ -139,9 +141,7 @@ export default function DemoPage() {
     <main className="vault">
       <p className="notice demo-notice">{disclosure}</p>
       <div className="vault-heading"><div><p className="eyebrow">Offline vault</p><h1>A little space for your secrets.</h1><p>Create a note, encrypt it, save the payload, then reveal it when you need it.</p></div><span className="badge">Browser AES-GCM · Local device</span></div>
-      <section className="notice" aria-label="Simulated permissions"><strong>Simulated permissions: </strong>{role === 'owner' ? 'Encrypt, save, decrypt and delete allowed.' : 'Ciphertext viewing allowed. Encrypt, save, decrypt and delete denied.'}
-        <div className="demo-actions"><button onClick={() => { setError(''); try { requireDemoPermission('restricted', 'decrypt') } catch (cause) { setError((cause as Error).message) } }}>Try restricted decrypt (access denied)</button></div>
-      </section>
+      <DemoAccess key={role} role={role} />
       {error && <p className="notice error" role="alert">{error}</p>}
       <p role="status" aria-live="polite">{busy ? 'Working locally…' : status}</p>
       <div className="vault-grid">
