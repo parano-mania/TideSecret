@@ -1,0 +1,28 @@
+# Dependencies and generated Next.js output
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local caches, tools and logs
+.npm-cache/
+.tide-pack/
+.vercel/
+.codex/
+*.log
+.DS_Store
+Thumbs.db
+
+# Local provisioning progress
+init/.firstAdmin*
+init/.tcinit*
+init/.realm_name
